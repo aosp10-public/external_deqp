@@ -23,6 +23,7 @@ import com.android.tradefed.config.ConfigurationException;
 import com.android.tradefed.config.OptionSetter;
 import com.android.tradefed.device.DeviceNotAvailableException;
 import com.android.tradefed.device.ITestDevice;
+import com.android.tradefed.metrics.proto.MetricMeasurement.Metric;
 import com.android.tradefed.result.ITestInvocationListener;
 import com.android.tradefed.result.TestDescription;
 import com.android.tradefed.testtype.Abi;
@@ -137,7 +138,7 @@ public class DeqpTestRunnerTest extends TestCase {
     private static DeqpTestRunner buildGlesTestRunner(int majorVersion,
                                                       int minorVersion,
                                                       String testlist,
-                                                      File testsDir) throws ConfigurationException, FileNotFoundException {
+                                                      File testsDir) throws ConfigurationException {
         DeqpTestRunner runner = new DeqpTestRunner();
         OptionSetter setter = new OptionSetter(runner);
 
@@ -225,7 +226,9 @@ public class DeqpTestRunnerTest extends TestCase {
 
             EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("setprop debug.hwui.renderer none"))).
                 andReturn("").once();
-            EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_enabled_app none"))).
+            EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_gl_driver_selection_pkgs \"\""))).
+                andReturn("").once();
+            EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_gl_driver_selection_values \"\""))).
                 andReturn("").once();
 
             expectRenderConfigQuery(mockDevice, requiredMajorVersion,
@@ -249,7 +252,7 @@ public class DeqpTestRunnerTest extends TestCase {
         mockListener.testStarted(EasyMock.eq(testId));
         EasyMock.expectLastCall().once();
 
-        mockListener.testEnded(EasyMock.eq(testId), EasyMock.<Map<String, String>>notNull());
+        mockListener.testEnded(EasyMock.eq(testId), EasyMock.<HashMap<String, Metric>>notNull());
         EasyMock.expectLastCall().once();
 
         mockListener.testRunEnded(EasyMock.anyLong(), EasyMock.<Map<String, String>>notNull());
@@ -374,7 +377,9 @@ public class DeqpTestRunnerTest extends TestCase {
 
         EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("setprop debug.hwui.renderer none"))).
             andReturn("").once();
-        EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_enabled_app none"))).
+        EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_gl_driver_selection_pkgs \"\""))).
+            andReturn("").once();
+        EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_gl_driver_selection_values \"\""))).
             andReturn("").once();
 
         mockListener.testStarted(EasyMock.eq(testId));
@@ -388,7 +393,7 @@ public class DeqpTestRunnerTest extends TestCase {
             EasyMock.expectLastCall().once();
         }
 
-        mockListener.testEnded(EasyMock.eq(testId), EasyMock.<Map<String, String>>notNull());
+        mockListener.testEnded(EasyMock.eq(testId), EasyMock.<HashMap<String, Metric>>notNull());
         EasyMock.expectLastCall().once();
 
         mockListener.testRunEnded(EasyMock.anyLong(), EasyMock.<Map<String, String>>notNull());
@@ -536,7 +541,9 @@ public class DeqpTestRunnerTest extends TestCase {
 
         EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("setprop debug.hwui.renderer none"))).
             andReturn("").once();
-        EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_enabled_app none"))).
+        EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_gl_driver_selection_pkgs \"\""))).
+            andReturn("").once();
+        EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_gl_driver_selection_values \"\""))).
             andReturn("").once();
 
         for (int i = 0; i < testPaths.length; i++) {
@@ -544,7 +551,7 @@ public class DeqpTestRunnerTest extends TestCase {
             EasyMock.expectLastCall().once();
 
             mockListener.testEnded(EasyMock.eq(testIds[i]),
-                    EasyMock.<Map<String, String>>notNull());
+                    EasyMock.<HashMap<String, Metric>>notNull());
 
             EasyMock.expectLastCall().once();
         }
@@ -621,7 +628,9 @@ public class DeqpTestRunnerTest extends TestCase {
 
         EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("setprop debug.hwui.renderer none"))).
             andReturn("").once();
-        EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_enabled_app none"))).
+        EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_gl_driver_selection_pkgs \"\""))).
+            andReturn("").once();
+        EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_gl_driver_selection_values \"\""))).
             andReturn("").once();
 
         IDevice mockIDevice = EasyMock.createMock(IDevice.class);
@@ -637,7 +646,7 @@ public class DeqpTestRunnerTest extends TestCase {
                 EasyMock.expectLastCall().once();
 
                 mockListener.testEnded(EasyMock.eq(expectedTests.get(i)),
-                                       EasyMock.<Map<String, String>>notNull());
+                                       EasyMock.<HashMap<String, Metric>>notNull());
 
                 EasyMock.expectLastCall().once();
             }
@@ -876,7 +885,9 @@ public class DeqpTestRunnerTest extends TestCase {
 
         EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("setprop debug.hwui.renderer none"))).
             andReturn("").once();
-        EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_enabled_app none"))).
+        EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_gl_driver_selection_pkgs \"\""))).
+            andReturn("").once();
+        EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_gl_driver_selection_values \"\""))).
             andReturn("").once();
 
         for (int i = 0; i < testPaths.length; i++) {
@@ -889,7 +900,7 @@ public class DeqpTestRunnerTest extends TestCase {
             EasyMock.expectLastCall().once();
 
             mockListener.testEnded(EasyMock.eq(testIds[i]),
-                    EasyMock.<Map<String, String>>notNull());
+                    EasyMock.<HashMap<String, Metric>>notNull());
             EasyMock.expectLastCall().once();
         }
 
@@ -938,7 +949,9 @@ public class DeqpTestRunnerTest extends TestCase {
 
         EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("setprop debug.hwui.renderer none"))).
             andReturn("").once();
-        EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_enabled_app none"))).
+        EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_gl_driver_selection_pkgs \"\""))).
+            andReturn("").once();
+        EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_gl_driver_selection_values \"\""))).
             andReturn("").once();
 
         mockListener.testRunEnded(EasyMock.anyLong(), EasyMock.<Map<String, String>>notNull());
@@ -985,7 +998,9 @@ public class DeqpTestRunnerTest extends TestCase {
 
         EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("setprop debug.hwui.renderer none"))).
             andReturn("").once();
-        EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_enabled_app none"))).
+        EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_gl_driver_selection_pkgs \"\""))).
+            andReturn("").once();
+        EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_gl_driver_selection_values \"\""))).
             andReturn("").once();
 
         mockListener.testRunEnded(EasyMock.anyLong(), EasyMock.<Map<String, String>>notNull());
@@ -1092,13 +1107,15 @@ public class DeqpTestRunnerTest extends TestCase {
 
         EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("setprop debug.hwui.renderer none"))).
             andReturn("").once();
-        EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_enabled_app none"))).
+        EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_gl_driver_selection_pkgs \"\""))).
+            andReturn("").once();
+        EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_gl_driver_selection_values \"\""))).
             andReturn("").once();
 
         mockListener.testStarted(EasyMock.eq(testId));
         EasyMock.expectLastCall().once();
 
-        mockListener.testEnded(EasyMock.eq(testId), EasyMock.<Map<String, String>>notNull());
+        mockListener.testEnded(EasyMock.eq(testId), EasyMock.<HashMap<String, Metric>>notNull());
         EasyMock.expectLastCall().once();
 
         mockListener.testRunEnded(EasyMock.anyLong(), EasyMock.<Map<String, String>>notNull());
@@ -1306,13 +1323,15 @@ public class DeqpTestRunnerTest extends TestCase {
 
         EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("setprop debug.hwui.renderer none"))).
             andReturn("").once();
-        EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_enabled_app none"))).
+        EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_gl_driver_selection_pkgs \"\""))).
+            andReturn("").once();
+        EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_gl_driver_selection_values \"\""))).
             andReturn("").once();
 
         mockListener.testStarted(EasyMock.eq(testId));
         EasyMock.expectLastCall().once();
 
-        mockListener.testEnded(EasyMock.eq(testId), EasyMock.<Map<String, String>>notNull());
+        mockListener.testEnded(EasyMock.eq(testId), EasyMock.<HashMap<String, Metric>>notNull());
         EasyMock.expectLastCall().once();
 
         mockListener.testRunEnded(EasyMock.anyLong(), EasyMock.<Map<String, String>>notNull());
@@ -1669,7 +1688,9 @@ public class DeqpTestRunnerTest extends TestCase {
 
         EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("setprop debug.hwui.renderer none"))).
             andReturn("").once();
-        EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_enabled_app none"))).
+        EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_gl_driver_selection_pkgs \"\""))).
+            andReturn("").once();
+        EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_gl_driver_selection_values \"\""))).
             andReturn("").once();
 
         mockListener.testRunEnded(EasyMock.anyLong(), (Map<String, String>) EasyMock.anyObject());
@@ -1716,7 +1737,9 @@ public class DeqpTestRunnerTest extends TestCase {
 
             EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("setprop debug.hwui.renderer none"))).
                 andReturn("").once();
-            EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_enabled_app none"))).
+            EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_gl_driver_selection_pkgs \"\""))).
+                andReturn("").once();
+            EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_gl_driver_selection_values \"\""))).
                 andReturn("").once();
 
             expectRenderConfigQuery(mockDevice, 3, 0);
@@ -1730,7 +1753,7 @@ public class DeqpTestRunnerTest extends TestCase {
                 EasyMock.expectLastCall().once();
 
                 mockListener.testEnded(EasyMock.eq(shardTests.get(i)),
-                                       EasyMock.<Map<String, String>>notNull());
+                                       EasyMock.<HashMap<String, Metric>>notNull());
 
                 EasyMock.expectLastCall().once();
             }
@@ -1872,7 +1895,9 @@ public class DeqpTestRunnerTest extends TestCase {
 
         EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("setprop debug.hwui.renderer none"))).
             andReturn("").once();
-        EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_enabled_app none"))).
+        EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_gl_driver_selection_pkgs \"\""))).
+            andReturn("").once();
+        EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_gl_driver_selection_values \"\""))).
             andReturn("").once();
 
         mockListener.testStarted(EasyMock.eq(testId));
@@ -2033,7 +2058,9 @@ public class DeqpTestRunnerTest extends TestCase {
 
         EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("setprop debug.hwui.renderer none"))).
             andReturn("").once();
-        EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_enabled_app none"))).
+        EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_gl_driver_selection_pkgs \"\""))).
+            andReturn("").once();
+        EasyMock.expect(mockDevice.executeShellCommand(EasyMock.eq("settings put global angle_gl_driver_selection_values \"\""))).
             andReturn("").once();
 
         for (int i = 0; i < testPaths.length; i++) {
@@ -2041,7 +2068,7 @@ public class DeqpTestRunnerTest extends TestCase {
             EasyMock.expectLastCall().once();
 
             mockListener.testEnded(EasyMock.eq(testIds[i]),
-                    EasyMock.<Map<String, String>>notNull());
+                    EasyMock.<HashMap<String, Metric>>notNull());
 
             EasyMock.expectLastCall().once();
         }

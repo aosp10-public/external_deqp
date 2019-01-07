@@ -27,6 +27,7 @@ import com.android.tradefed.config.OptionClass;
 import com.android.tradefed.device.DeviceNotAvailableException;
 import com.android.tradefed.device.ITestDevice;
 import com.android.tradefed.log.LogUtil.CLog;
+import com.android.tradefed.metrics.proto.MetricMeasurement.Metric;
 import com.android.tradefed.result.ByteArrayInputStreamSource;
 import com.android.tradefed.result.ITestInvocationListener;
 import com.android.tradefed.result.LogDataType;
@@ -321,7 +322,7 @@ public class DeqpTestRunner implements IBuildReceiver, IDeviceTest,
                         mSink.testLog(testId.getClassName() + "." + testId.getTestName() + "@"
                                 + entry.getKey().getId(), LogDataType.XML, source);
 
-                        source.cancel();
+                        source.close();
                     }
                 }
 
@@ -342,7 +343,7 @@ public class DeqpTestRunner implements IBuildReceiver, IDeviceTest,
                     mSink.testFailed(testId, errorLog.toString());
                 }
 
-                final Map<String, String> emptyMap = Collections.emptyMap();
+                final HashMap<String, Metric> emptyMap = new HashMap<>();
                 mSink.testEnded(testId, emptyMap);
             }
         }
@@ -1624,12 +1625,13 @@ public class DeqpTestRunner implements IBuildReceiver, IDeviceTest,
      * Pass all remaining tests without running them
      */
     private void fakePassTests(ITestInvocationListener listener) {
-        Map <String, String> emptyMap = Collections.emptyMap();
+        HashMap<String, Metric> emptyMap = new HashMap<>();
         for (TestDescription test : mRemainingTests) {
-            CLog.d("Skipping test '%s', Opengl ES version not supported", test.toString());
             listener.testStarted(test);
             listener.testEnded(test, emptyMap);
         }
+        // Log only once all the skipped tests
+        CLog.d("Opengl ES version not supported. Skipping tests '%s'", mRemainingTests);
         mRemainingTests.clear();
     }
 
@@ -2024,8 +2026,9 @@ public class DeqpTestRunner implements IBuildReceiver, IDeviceTest,
             // Get the system into a known state.
             // FIXME -- b/115906203 -- Skia Vulkan workaround
             mDevice.executeShellCommand("setprop debug.hwui.renderer none");
-            // Force dEQP to use ANGLE
-            mDevice.executeShellCommand("settings put global angle_enabled_app none");
+            // Clear ANGLE Global.Settings values
+            mDevice.executeShellCommand("settings put global angle_gl_driver_selection_pkgs \"\"");
+            mDevice.executeShellCommand("settings put global angle_gl_driver_selection_values \"\"");
 
             // ANGLE
             if (mAngle.equals(ANGLE_VULKAN)) {
@@ -2033,15 +2036,19 @@ public class DeqpTestRunner implements IBuildReceiver, IDeviceTest,
                 // FIXME -- b/115906203 -- Skia Vulkan workaround
                 mDevice.executeShellCommand("setprop debug.hwui.renderer skiavk");
                 // Force dEQP to use ANGLE
-                mDevice.executeShellCommand("settings put global angle_enabled_app "
-                    + DEQP_ONDEVICE_PKG);
+                mDevice.executeShellCommand(
+                    "settings put global angle_gl_driver_selection_pkgs " + DEQP_ONDEVICE_PKG);
+                mDevice.executeShellCommand(
+                    "settings put global angle_gl_driver_selection_values angle");
                 // Configure ANGLE to use Vulkan
                 mDevice.executeShellCommand("setprop debug.angle.backend 2");
             } else if (mAngle.equals(ANGLE_OPENGLES)) {
                 CLog.i("Configuring ANGLE to use: " + mAngle);
                 // Force dEQP to use ANGLE
-                mDevice.executeShellCommand("settings put global angle_enabled_app "
-                    + DEQP_ONDEVICE_PKG);
+                mDevice.executeShellCommand(
+                    "settings put global angle_gl_driver_selection_pkgs " + DEQP_ONDEVICE_PKG);
+                mDevice.executeShellCommand(
+                    "settings put global angle_gl_driver_selection_values angle");
                 // Configure ANGLE to use Vulkan
                 mDevice.executeShellCommand("setprop debug.angle.backend 0");
             }
@@ -2066,7 +2073,8 @@ public class DeqpTestRunner implements IBuildReceiver, IDeviceTest,
                     mDevice.executeShellCommand("setprop debug.hwui.renderer none");
                 }
                 // Stop forcing dEQP to use ANGLE
-                mDevice.executeShellCommand("settings put global angle_enabled_app none");
+                mDevice.executeShellCommand("settings put global angle_gl_driver_selection_pkgs \"\"");
+                mDevice.executeShellCommand("settings put global angle_gl_driver_selection_values \"\"");
             }
         } catch (DeviceNotAvailableException ex) {
             // chain forward
