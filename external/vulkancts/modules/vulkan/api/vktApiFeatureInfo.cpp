@@ -2578,9 +2578,10 @@ tcu::TestStatus imageFormatProperties (Context& context, const VkFormat format, 
 																	properties.maxExtent.height	>= deviceLimits.maxImageDimension3D &&
 																	properties.maxExtent.depth	>= deviceLimits.maxImageDimension3D),
 								  "Reported dimensions smaller than device limits");
-					results.check(properties.maxMipLevels == fullMipPyramidSize, "maxMipLevels is not full mip pyramid size");
-					results.check(imageType == VK_IMAGE_TYPE_3D || properties.maxArrayLayers >= deviceLimits.maxImageArrayLayers,
-								  "maxArrayLayers smaller than device limits");
+					results.check((isYCbCrFormat(format) && (properties.maxMipLevels == 1)) || properties.maxMipLevels == fullMipPyramidSize,
+					              "Invalid mip pyramid size");
+					results.check((isYCbCrFormat(format) && (properties.maxArrayLayers == 1)) || imageType == VK_IMAGE_TYPE_3D ||
+					              properties.maxArrayLayers >= deviceLimits.maxImageArrayLayers, "Invalid maxArrayLayers");
 				}
 				else
 				{
@@ -3541,6 +3542,7 @@ tcu::TestStatus testNoUnknownExtensions (Context& context)
 
 	// All known extensions should be added to allowedExtensions:
 	// allowedExtensions.insert("VK_GOOGLE_extension1");
+	allowedDeviceExtensions.insert("VK_ANDROID_external_memory_android_hardware_buffer");
 	allowedDeviceExtensions.insert("VK_GOOGLE_display_timing");
 
 	// Instance extensions
