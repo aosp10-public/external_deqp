@@ -81,7 +81,6 @@ public class DeqpTestRunner implements IBuildReceiver, IDeviceTest,
     private static final String INCOMPLETE_LOG_MESSAGE = "Crash: Incomplete test log";
     private static final String SKIPPED_INSTANCE_LOG_MESSAGE = "Configuration skipped";
     private static final String NOT_EXECUTABLE_LOG_MESSAGE = "Abort: Test cannot be executed";
-    private static final String SHELL_DIR = "/sdcard/Android/sandbox/com.drawelements.deqp/";
     private static final String APP_DIR = "/sdcard/";
     private static final String CASE_LIST_FILE_NAME = "dEQP-TestCaseList.txt";
     private static final String LOG_FILE_NAME = "TestLog.qpa";
@@ -1406,9 +1405,9 @@ public class DeqpTestRunner implements IBuildReceiver, IDeviceTest,
 
         final String testCases = generateTestCaseTrie(batch.tests);
 
-        mDevice.executeShellCommand("rm " + SHELL_DIR + CASE_LIST_FILE_NAME);
-        mDevice.executeShellCommand("rm " + SHELL_DIR + LOG_FILE_NAME);
-        mDevice.pushString(testCases + "\n", SHELL_DIR + CASE_LIST_FILE_NAME);
+        mDevice.executeShellCommand("rm " + APP_DIR + CASE_LIST_FILE_NAME);
+        mDevice.executeShellCommand("rm " + APP_DIR + LOG_FILE_NAME);
+        mDevice.pushString(testCases + "\n", APP_DIR + CASE_LIST_FILE_NAME);
 
         final String instrumentationName =
                 "com.drawelements.deqp/com.drawelements.deqp.testercore.DeqpInstrumentation";
@@ -1831,10 +1830,10 @@ public class DeqpTestRunner implements IBuildReceiver, IDeviceTest,
     private static Set<String> getNonPatternFilters(List<String> filters) {
         Set<String> nonPatternFilters = new HashSet<String>();
         for (String filter : filters) {
-        	if (filter.startsWith("#") || filter.isEmpty()) {
-        		// Skip comments and empty lines
-        		continue;
-			}
+            if (filter.startsWith("#") || filter.isEmpty()) {
+                // Skip comments and empty lines
+                continue;
+            }
             if (!filter.contains("*")) {
                 // Deqp usesly only dots for separating between parts of the names
                 // Convert last dot to hash if needed.
@@ -2004,8 +2003,6 @@ public class DeqpTestRunner implements IBuildReceiver, IDeviceTest,
     private void setupTestEnvironment() throws DeviceNotAvailableException {
         try {
             // Get the system into a known state.
-            // FIXME -- b/115906203 -- Skia Vulkan workaround
-            mDevice.executeShellCommand("setprop debug.hwui.renderer none");
             // Clear ANGLE Global.Settings values
             mDevice.executeShellCommand("settings put global angle_gl_driver_selection_pkgs \"\"");
             mDevice.executeShellCommand("settings put global angle_gl_driver_selection_values \"\"");
@@ -2013,8 +2010,6 @@ public class DeqpTestRunner implements IBuildReceiver, IDeviceTest,
             // ANGLE
             if (mAngle.equals(ANGLE_VULKAN)) {
                 CLog.i("Configuring ANGLE to use: " + mAngle);
-                // FIXME -- b/115906203 -- Skia Vulkan workaround
-                mDevice.executeShellCommand("setprop debug.hwui.renderer skiavk");
                 // Force dEQP to use ANGLE
                 mDevice.executeShellCommand(
                     "settings put global angle_gl_driver_selection_pkgs " + DEQP_ONDEVICE_PKG);
@@ -2048,10 +2043,6 @@ public class DeqpTestRunner implements IBuildReceiver, IDeviceTest,
         try {
             if (!mAngle.equals(ANGLE_NONE)) {
                 CLog.i("Cleaning up ANGLE");
-                if (mAngle.equals(ANGLE_VULKAN)) {
-                    // FIXME -- b/115906203 -- Undo Skia Vulkan workaround
-                    mDevice.executeShellCommand("setprop debug.hwui.renderer none");
-                }
                 // Stop forcing dEQP to use ANGLE
                 mDevice.executeShellCommand("settings put global angle_gl_driver_selection_pkgs \"\"");
                 mDevice.executeShellCommand("settings put global angle_gl_driver_selection_values \"\"");
