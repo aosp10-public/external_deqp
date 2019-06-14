@@ -91,12 +91,4 @@ void checkResult (VkResult result, const char* msg, const char* file, int line)
 	}
 }
 
-void checkWsiResult (VkResult result, const char* msg, const char* file, int line)
-{
-	if (result == VK_SUBOPTIMAL_KHR)
-		return;
-
-	checkResult(result, msg, file, line);
-}
-
 } // vk
